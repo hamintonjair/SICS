@@ -1,0 +1,11 @@
+          // Ayuda Humanitaria
+          ayuda_humanitaria:
+            formData.ayuda_humanitaria !== undefined
+              ? formData.ayuda_humanitaria
+              : false,
+          descripcion_ayuda_humanitaria:
+            formData.descripcion_ayuda_humanitaria || "",
+            
+          // Firma digital
+          firma: formData.firma || null,
+        };
