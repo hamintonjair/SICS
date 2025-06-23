@@ -5,10 +5,10 @@ flask-cors==4.0.0
 python-dotenv==0.21.0
 
 # Database
-pymongo[srv]==4.3.3
+pymongo[srv]==4.12.1  # Updated to a version available in Vercel
 
 # Security
-bcrypt==4.3.0
+bcrypt==4.0.1  # Downgraded for compatibility
 PyJWT==2.8.0
 
 # Utils
