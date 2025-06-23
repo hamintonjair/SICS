@@ -7,22 +7,10 @@
       "config": { 
         "distDir": "build"
       }
-    },
-    { 
-      "src": "api/**.py", 
-      "use": "@vercel/python@3.0.0",
-      "config": {
-        "pythonVersion": "3.9"
-      }
     }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api" },
     { "src": "/(.*)", "dest": "/frontend" }
-  ],
-  "build": {
-    "env": {
-      "PYTHON_VERSION": "3.9"
-    }
-  }
+  ]
 }
