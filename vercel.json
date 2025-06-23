@@ -7,9 +7,7 @@
       "config": {
         "maxLambdaSize": "15mb",
         "runtime": "python3.9",
-        "installCommand": "python -m pip install --upgrade pip && pip install -r backend/api/requirements.txt --only-binary :all:",
-        "includeFiles": "backend/api/**",
-        "suppressStreamDuringInit": true
+        "includeFiles": "backend/api/**"
       }
     },
     {
@@ -33,17 +31,5 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ],
-  "env": {
-    "PYTHONUNBUFFERED": "true",
-    "PYTHONPATH": "/var/task",
-    "PYTHON_VERSION": "3.9"
-  },
-  "functions": {
-    "backend/api/index.py": {
-      "runtime": "python3.9",
-      "maxDuration": 10,
-      "memory": 1024
-    }
-  }
+  ]
 }

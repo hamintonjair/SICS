@@ -1,21 +1,13 @@
-# Core Flask and API dependencies
+# Core dependencies
 Flask==2.2.5
-Flask-JWT-Extended==4.4.4
-flask-cors==4.0.0
+Werkzeug==2.2.3
 python-dotenv==0.21.0
 
 # Database
-pymongo[srv]==4.12.1  # Updated to a version available in Vercel
-
-# Security
-bcrypt==4.0.1  # Downgraded for compatibility
-PyJWT==2.8.0
+pymongo[srv]==4.3.3
 
 # Utils
-Werkzeug==2.2.3
 requests==2.31.0
 
 # Force using only pre-built wheels to avoid compilation
 --only-binary :all:
-
-# Add any additional dependencies here if needed
