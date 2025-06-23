@@ -1,10 +1,21 @@
+# Core Flask and API dependencies
 Flask==2.2.5
 Flask-JWT-Extended==4.4.4
 flask-cors==4.0.0
 python-dotenv==0.21.0
+
+# Database
 pymongo[srv]==4.3.3
-marshmallow==3.19.0
+
+# Security
 bcrypt==4.3.0
+PyJWT==2.8.0
+
+# Utils
 Werkzeug==2.2.3
-pydantic==1.10.14
 requests==2.31.0
+
+# Force using only pre-built wheels to avoid compilation
+--only-binary :all:
+
+# Add any additional dependencies here if needed

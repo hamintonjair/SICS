@@ -1,0 +1,27 @@
+[build]
+  command = "echo 'Build started' && pip install -r backend/api/requirements.txt --only-binary :all:"
+
+[build.environment]
+  PYTHONUNBUFFERED = "true"
+  PYTHONPATH = "/var/task"
+
+[functions]
+  "backend/api/*.py"
+    runtime = "python3.9"
+    maxDuration = 10
+    memory = 1024
+
+[[redirects]]
+  source = "/api/(.*)"
+  destination = "/backend/api"
+  statusCode = 200
+
+[[redirects]]
+  source = "/"
+  destination = "/frontend"
+  statusCode = 200
+
+[[redirects]]
+  source = "/(.*)"
+  destination = "/frontend/$1"
+  statusCode = 200

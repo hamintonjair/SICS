@@ -6,7 +6,10 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.9"
+        "runtime": "python3.9",
+        "installCommand": "pip install --upgrade pip && pip install -r backend/api/requirements.txt --only-binary :all:",
+        "includeFiles": "backend/api/**",
+        "suppressStreamDuringInit": true
       }
     },
     {
@@ -30,5 +33,15 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ]
+  ],
+  "env": {
+    "PYTHONUNBUFFERED": "true",
+    "PYTHONPATH": "/var/task"
+  },
+  "functions": {
+    "backend/api/index.py": {
+      "maxDuration": 10,
+      "memory": 1024
+    }
+  }
 }

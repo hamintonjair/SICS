@@ -1,43 +1,87 @@
 import os
 import sys
+import json
+import traceback
 from pathlib import Path
 
 # Add the parent directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from run import app
-from flask import request, jsonify
-import json
+# Configure logging
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+try:
+    from run import app
+    logger.info("Flask app imported successfully")
+except Exception as e:
+    logger.error(f"Error importing Flask app: {str(e)}")
+    logger.error(traceback.format_exc())
+    raise
 
 def handler(event, context):
-    # This handler is needed for Vercel to run the Flask app
-    from werkzeug.test import create_environ
-    from werkzeug.wsgi import ClosingIterator
-    from io import BytesIO
+    logger.info(f"Received event: {json.dumps(event, default=str)[:500]}...")
     
-    # Parse the incoming event
-    http_method = event.get('httpMethod', 'GET')
-    path = event.get('path', '/')
-    headers = event.get('headers', {})
-    query_params = event.get('queryStringParameters', {})
-    body = event.get('body', '')
+    try:
+        from werkzeug.test import create_environ
+        from werkzeug.wsgi import ClosingIterator
+        from io import BytesIO
+    except ImportError as e:
+        logger.error(f"Import error: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({'error': 'Server configuration error', 'message': str(e)})
+        }
     
-    # Create a WSGI environment
-    environ = create_environ(
-        path=path,
-        method=http_method,
-        headers=headers,
-        query_string=query_params,
-        input_stream=BytesIO(body.encode('utf-8') if body else b'')
-    )
+    try:
+        # Parse the incoming event
+        http_method = event.get('httpMethod', 'GET')
+        path = event.get('path', '/')
+        headers = event.get('headers', {}) or {}
+        query_params = event.get('queryStringParameters', {}) or {}
+        body = event.get('body', '')
+        
+        logger.info(f"Processing {http_method} {path}")
+    except Exception as e:
+        logger.error(f"Error parsing event: {str(e)}")
+        return {
+            'statusCode': 400,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({'error': 'Invalid request', 'message': str(e)})
+        }
     
-    # Set the Content-Type header if not present
-    if 'Content-Type' not in environ.get('HTTP_CONTENT_TYPE', ''):
+    try:
+        # Create a WSGI environment
+        environ = create_environ(
+            path=path,
+            method=http_method,
+            headers=headers,
+            query_string=query_params,
+            input_stream=BytesIO(body.encode('utf-8') if body else b'')
+        )
+    except Exception as e:
+        logger.error(f"Error creating WSGI environment: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({'error': 'Server error', 'message': str(e)})
+        }
+    
+    # Set headers
+    environ['CONTENT_TYPE'] = headers.get('content-type', 'application/json')
+    
+    # Copy headers to environ
+    for key, value in headers.items():
+        if key.lower() == 'content-type':
+            continue
+        wsgi_key = 'HTTP_' + key.upper().replace('-', '_')
+        environ[wsgi_key] = value
+    
+    # Set default content type if not set
+    if 'CONTENT_TYPE' not in environ:
         environ['CONTENT_TYPE'] = 'application/json'
-    
-    # Set the Authorization header if present
-    if 'authorization' in headers:
-        environ['HTTP_AUTHORIZATION'] = headers['authorization']
     
     # Initialize response variables
     response_headers = {}
