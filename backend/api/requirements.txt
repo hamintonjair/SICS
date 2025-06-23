@@ -4,7 +4,7 @@ Werkzeug==2.2.3
 python-dotenv==0.21.0
 
 # Database
-pymongo[srv]==4.3.3
+pymongo[srv]==4.5.0  # Versión compatible con Python 3.12
 
 # Utils
 requests==2.31.0
